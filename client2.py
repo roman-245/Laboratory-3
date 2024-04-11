@@ -6,7 +6,7 @@ import struct
 
 # Пример использования
 server_address = "localhost"
-server_port = 8888
+server_port = 65432
 interval = 10
 src_path = input("Введите путь к корневой папке: ")
 
