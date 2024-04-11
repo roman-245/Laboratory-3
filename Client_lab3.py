@@ -7,10 +7,8 @@ def send_data(server_host, server_port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((server_host, server_port))
 
+    sock.sendall("var1".encode())
 
-    variant = input("Введите вариант: ") 
-    sock.sendall(variant.encode())
-    
     file_extension = input("Введите расширения для файлов (введите json или xml): ")
     if (file_extension != "json") and (file_extension != "xml"):
         print("Ошибка! Расширение выбрано не правильно, должно быть json или xml.")
@@ -38,9 +36,7 @@ def request_file(server_host, server_port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((server_host, server_port))
 
-
-    variant = input("Введите вариант: ") 
-    sock.sendall(variant.encode())
+    sock.sendall("var1".encode())
 
     folder_name = input("Название директорий: ") # К примеру 17-03-2024_17-32-55
     file_number = input("Названия получаемого файла: ")
@@ -64,6 +60,10 @@ def request_file(server_host, server_port):
     expected_max_string_size = 1024
 
     while recv_size0 > 0:
+        if recv_size0 < expected_max_string_size:
+            current_extracting_size = recv_size0
+        else:
+            current_extracting_size = expected_max_string_size
 
         data = sock.recv(1024)
         string_buff += struct.unpack(f'{current_extracting_size}s', data)[0]
