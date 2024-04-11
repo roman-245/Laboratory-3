@@ -7,9 +7,10 @@ def send_data(server_host, server_port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((server_host, server_port))
 
+
     variant = input("Введите вариант: ") 
     sock.sendall(variant.encode())
-
+    
     file_extension = input("Введите расширения для файлов (введите json или xml): ")
     if (file_extension != "json") and (file_extension != "xml"):
         print("Ошибка! Расширение выбрано не правильно, должно быть json или xml.")
@@ -37,6 +38,7 @@ def request_file(server_host, server_port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((server_host, server_port))
 
+
     variant = input("Введите вариант: ") 
     sock.sendall(variant.encode())
 
@@ -62,10 +64,6 @@ def request_file(server_host, server_port):
     expected_max_string_size = 1024
 
     while recv_size0 > 0:
-        if recv_size0 < expected_max_string_size:
-            current_extracting_size = recv_size0
-        else:
-            current_extracting_size = expected_max_string_size
 
         data = sock.recv(1024)
         string_buff += struct.unpack(f'{current_extracting_size}s', data)[0]
@@ -86,7 +84,7 @@ server_host = 'localhost'
 server_port = 65432
 
 # Пример отправки данных на сервер
-#send_data(server_host, server_port)
+send_data(server_host, server_port)
 
 # Пример запроса файла с сервера
 request_file(server_host, server_port)

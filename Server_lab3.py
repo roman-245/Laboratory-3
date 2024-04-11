@@ -37,7 +37,7 @@ def handle_commands(conn):
 
                 for number in numbers:
                     save_data(number, file_extension, directory_name)
-                        
+                    
                 # Строим бинарное дерево
                 root_node = build_binary_tree(numbers)
 
