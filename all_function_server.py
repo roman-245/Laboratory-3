@@ -1,86 +1,51 @@
-import datetime
 import os
+import shutil
+import time
 import socket
+import pickle
 import struct
-import xml.etree.ElementTree as ET
-import json
 
-# Функция для создания директорий
-def create_directory():
-    # Текущае время
-    now = datetime.datetime.now()
-    directory_name = f"{now:%d-%m-%Y_%H-%M-%S}"
 
-    # Создание директории
-    os.mkdir(directory_name)
-    return directory_name
+def receive_set(server_address, server_port):
+        print(f"Сервер слушает на {server_address}:{server_port}")
+        conn, addr = s.accept()
+        print(f"Подключение от {addr}")
+        data = conn.recv(4)
+        data_size = struct.unpack('!I', data)
 
-# Функция для создания файла и сохранения данных
-def save_data(number, file_extension, directory_name, file_name = None):
-    # Если имя файла было не задано аргументом, то присваиваем number как имя
-    if not file_name:
-        file_name = str(number)
-    file_path = directory_name + "/" + file_name + "." + file_extension
+        received_set = b''
+        while len(received_set) < data_size:
+            received_set += s.recv(1024)
+        files = pickle.loads(received_set)
+        print("Полученные данные от клиента:", files)
 
-    # Создание и заполнение данными файл
-    data = {"value": number}
+        return received_set
 
-    if file_extension == "json":
-        with open(file_path, 'w') as file:
-            json.dump(data, file, indent=4)
 
-    elif file_extension == "xml":
-        root = ET.Element("data")
-        root.text = str(data)
-        tree = ET.ElementTree(root)
-        tree.write(file_path, encoding="utf-8", xml_declaration=True)
+def sync_folders(folder1, folder2, interval):
+    while True:
+        # Get the list of files in both folders
+        files1 = set(os.listdir(folder1))
+        files2 = set(os.listdir(folder2))
 
-# Класс для узлов в дереве
-class Node:
-    def __init__(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
+        print(f'Содержимое папки сервера: {files1}')
+        print(f'Содержимое папки клиента: {files2}')
 
-# Функция для создания файла, который представляет собой дерево
-def build_binary_tree(nums):
-    if not nums:
-        return None
-    
-    root = Node(nums[0])
-    queue = [root]
-    i = 1
-    
-    while i < len(nums):
-        # Полученние текущей ссылки для класса
-        current_node = queue.pop(0)
-        
-        # Добавление слева
-        left_value = nums[i] if i < len(nums) else None
-        if left_value is not None:
-            current_node.left = Node(left_value)
-            queue.append(current_node.left)
-        
-        i += 1
-        
-        # Добавление справа
-        right_value = nums[i] if i < len(nums) else None
-        if right_value is not None:
-            current_node.right = Node(right_value)
-            queue.append(current_node.right)
-        
-        i += 1
-    
-    return root
+        # Find files to be added or removed in folder2
+        to_add = files1 - files2
+        to_remove = files2 - files1
 
-# Функция для получения данных с дерева рекурсивно
-def convert_tree_to_json(root):
-    if not root:
-        return None
-    
-    tree_dict = {}
-    tree_dict['value'] = root.value
-    tree_dict['left'] = convert_tree_to_json(root.left)
-    tree_dict['right'] = convert_tree_to_json(root.right)
-    
-    return tree_dict
+        # Add missing files from folder1 to folder2
+        for file in to_add:
+            src = os.path.join(folder1, file)
+            dst = os.path.join(folder2, file)
+            shutil.copy(src, dst)
+            print(f"Added: {file}")
+
+        # Remove extra files from folder2
+        for file in to_remove:
+            src = os.path.join(folder2, file)
+            os.remove(src)
+            print(f"Removed: {file}")
+
+        time.sleep(interval)
