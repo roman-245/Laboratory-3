@@ -12,7 +12,7 @@ server_socket.listen(5)
 
 def handle_commands(conn):
     data = conn.recv(1024)
-    if data.decode() == "petr":
+    elif data.decode() == "petr":
         folders = []
         numbers = []
         today = time.strftime('%Y-%m-%d_%H-%M-%S')
