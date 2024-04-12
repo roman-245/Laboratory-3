@@ -33,9 +33,7 @@ def send_set(data_set, server_address, server_port):
             s.sendall(data)
         print("Множество успешно отправлено.")
 
-
-if __name__ == '__main__':
-    main(src_path)
+main(src_path)
 
 
 
