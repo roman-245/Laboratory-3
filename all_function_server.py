@@ -159,14 +159,6 @@ def send_files(conn, program_name):
 
 # Функции Романа
 
-def create_directory():
-    # Текущае время
-    now = datetime.datetime.now()
-    directory_name = f"{now:%d-%m-%Y_%H-%M-%S}"
-
-    # Создание директории
-    os.mkdir(directory_name)
-    return directory_name
 
 
 # Функция для создания файла и сохранения данных
@@ -242,21 +234,6 @@ def convert_tree_to_json(root):
 
     return tree_dict
 
-def synchronize_folders(directory1, directory2, gap, files):
-    while True:
-        add_files = files - set(os.listdir(directory2))
-        remove_files = set(os.listdir(directory2)) - files
-        for file in add_files:
-            start = os.path.join(directory1, file)
-            finish = os.path.join(directory2, file)
-            shutil.copy(start, finish)
-            print('Файл', file, 'был добавлен')
-        for file in remove_files:
-            start = os.path.join(directory2, file)
-            os.remove(start)
-            print('Файл', file, 'был удален')
-        time.sleep(gap)
-
 
 def create_directory():
     # Текущае время
@@ -310,5 +287,3 @@ def sync_folders(folder1, folder2, interval):
             print(f"Removed: {file}")
 
         time.sleep(interval)
-
-#Роман
