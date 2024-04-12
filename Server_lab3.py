@@ -123,3 +123,4 @@ while True:
     print("Connected by", address)
     print("Сервер запущен. Ждет присоединения...")
     Thread(target=handle_commands, args=(conn,)).start()
+
